@@ -9,6 +9,7 @@ import (
 
 type modelConverter interface {
 	fromGrpcCreateUserRequestToModel(ctx context.Context, req *protogrpc.CreateUserRequest) businesslogic.UserDetails
+	fromGrpcUpdateUserRequestToModel(ctx context.Context, req *protogrpc.UpdateUserRequest) businesslogic.UserUpdate
 	fromModelUserToGrpc(ctx context.Context, user businesslogic.User) *protogrpc.User
 }
 
@@ -27,6 +28,17 @@ func (c *serverModelConverter) fromGrpcCreateUserRequestToModel(_ context.Contex
 		},
 		Country: req.GetCountry(),
 	}
+}
+
+func (c *serverModelConverter) fromGrpcUpdateUserRequestToModel(_ context.Context, req *protogrpc.UpdateUserRequest) businesslogic.UserUpdate {
+	userUpdate := businesslogic.UserUpdate{
+		FirstName:  req.GetUpdate().GetFirstName(),
+		LastName:   req.GetUpdate().GetLastName(),
+		Country:    req.GetUpdate().GetCountry(),
+		UpdateMask: req.GetUpdateMask().GetPaths(),
+	}
+
+	return userUpdate
 }
 
 func (c *serverModelConverter) fromModelUserToGrpc(_ context.Context, user businesslogic.User) *protogrpc.User {

@@ -14,6 +14,13 @@ type UserDetails struct {
 	UpdatedAt    time.Time `bson:"updated_at,omitempty"`
 }
 
+type UserUpdate struct {
+	FirstName *string    `bson:"first_name,omitempty"`
+	LastName  *string    `bson:"last_name,omitempty"`
+	Country   *string    `bson:"country,omitempty"`
+	UpdatedAt *time.Time `bson:"updated_at,omitempty"`
+}
+
 type User struct {
 	ID        string    `bson:"_id,omitempty"`
 	FirstName string    `bson:"first_name,omitempty"`

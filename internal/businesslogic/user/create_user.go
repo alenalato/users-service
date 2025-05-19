@@ -37,7 +37,7 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 	// create user in storage
 	storageUser, createErr := l.userStorage.CreateUser(ctx, storageUserDetails)
 	if createErr != nil {
-		return nil, common.NewError(createErr, common.ErrTypeInternal)
+		return nil, createErr
 	}
 	if storageUser == nil {
 		err := errors.New("unexpected nil storage user")

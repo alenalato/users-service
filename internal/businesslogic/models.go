@@ -16,6 +16,13 @@ type UserDetails struct {
 	Country   string
 }
 
+type UserUpdate struct {
+	FirstName  string
+	LastName   string
+	Country    string
+	UpdateMask []string
+}
+
 type User struct {
 	ID        string
 	FirstName string
