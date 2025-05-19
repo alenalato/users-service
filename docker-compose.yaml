@@ -1,0 +1,36 @@
+name: users
+services:
+  server:
+    build:
+      context: ./
+    volumes:
+      - .:/mnt
+      - /var/run/docker.sock:/var/run/docker.sock
+      # unmount .git
+      - git:/mnt/.git
+      # unmount .dev
+      - dev:/mnt/.dev
+      # DEV share go mod cache for faster go run
+      - ~/go/pkg:/go/pkg
+      # DEV share go build cache for faster go run
+      - ~/.cache/go-build:/root/.cache/go-build
+    ports:
+      - "9090:9090"
+    working_dir: /mnt
+    environment:
+      - LOG_LEVEL
+      - GRPC_LISTEN_HOST
+      - GRPC_LISTEN_PORT
+      - MONGODB_URI
+      - MONGODB_DATABASE
+
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - .dev/data/mongo:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  git:
+  dev:

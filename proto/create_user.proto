@@ -1,0 +1,22 @@
+// Defines the CreateUserRequest and CreateUserResponse messages
+
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/alenalato/users-service/pkg/grpc";
+
+import "common.proto";
+
+message CreateUserRequest {
+  string first_name = 20;
+  string last_name = 30;
+  string nickname = 40;
+  string password = 50;
+  string email = 60;
+  string country = 70;
+}
+
+message CreateUserResponse {
+  User user = 10;
+}

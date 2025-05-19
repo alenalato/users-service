@@ -1,0 +1,15 @@
+// Defines the DeleteUserRequest and DeleteUserResponse messages
+
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/alenalato/users-service/pkg/grpc";
+
+message DeleteUserRequest {
+  string user_id = 10;
+}
+
+message DeleteUserResponse {
+  string user_id = 10;
+}

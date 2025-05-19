@@ -1,0 +1,37 @@
+// Defines common messages
+
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/alenalato/users-service/pkg/grpc";
+
+import "google/protobuf/timestamp.proto";
+
+message UserFilter {
+  message FirstNameFilter {
+    repeated string values = 10;
+  }
+  FirstNameFilter first_name = 10;
+
+  message LastNameFilter {
+    repeated string values = 10;
+  }
+  LastNameFilter last_name = 20;
+
+  message CountryFilter {
+    repeated string values = 10;
+  }
+  CountryFilter country = 30;
+}
+
+message User {
+  string id = 10;
+  string first_name = 20;
+  string last_name = 30;
+  string nickname = 40;
+  string email = 50;
+  string country = 60;
+  google.protobuf.Timestamp created_at = 70;
+  google.protobuf.Timestamp updated_at = 80;
+}

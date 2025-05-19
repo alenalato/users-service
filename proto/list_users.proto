@@ -1,0 +1,20 @@
+// Defines the ListUsersRequest and ListUsersResponse messages
+
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/alenalato/users-service/pkg/grpc";
+
+import "common.proto";
+
+message ListUsersRequest {
+  uint32 page_size = 10;
+  string page_token = 20;
+  UserFilter filter = 30;
+}
+
+message ListUsersResponse {
+  repeated User users = 10;
+  string next_page_token = 20;
+}
