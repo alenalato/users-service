@@ -10,17 +10,17 @@ import "google/protobuf/timestamp.proto";
 
 message UserFilter {
   message FirstNameFilter {
-    repeated string values = 10;
+    string value = 10;
   }
   FirstNameFilter first_name = 10;
 
   message LastNameFilter {
-    repeated string values = 10;
+    string value = 10;
   }
   LastNameFilter last_name = 20;
 
   message CountryFilter {
-    repeated string values = 10;
+    string value = 10;
   }
   CountryFilter country = 30;
 }

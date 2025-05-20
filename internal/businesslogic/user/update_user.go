@@ -6,7 +6,6 @@ import (
 	"github.com/alenalato/users-service/internal/businesslogic"
 	"github.com/alenalato/users-service/internal/common"
 	"github.com/alenalato/users-service/internal/logger"
-	"time"
 )
 
 func (l *Logic) UpdateUser(
@@ -23,16 +22,13 @@ func (l *Logic) UpdateUser(
 	}
 
 	// prepare storage user update
-	storageUserUpdate := l.converter.fromModelUserUpdateToStorage(ctx, userUpdate)
-	if storageUserUpdate.FirstName == nil && storageUserUpdate.LastName == nil && storageUserUpdate.Country == nil {
-		err := errors.New("no valid fields in update mask")
-		logger.Log.Error(err)
-
-		return nil, common.NewError(err, common.ErrTypeInvalidArgument)
+	storageUserUpdate, convErr := l.converter.fromModelUserUpdateToStorage(ctx, userUpdate)
+	if convErr != nil {
+		return nil, convErr
 	}
 
 	// set updated at timestamp
-	now := time.Now()
+	now := l.time.Now()
 	storageUserUpdate.UpdatedAt = &now
 
 	storageUser, updateErr := l.userStorage.UpdateUser(ctx, userId, storageUserUpdate)

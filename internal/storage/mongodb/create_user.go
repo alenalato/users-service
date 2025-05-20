@@ -12,22 +12,23 @@ import (
 )
 
 func (m *MongoDB) CreateUser(ctx context.Context, userDetails storage.UserDetails) (*storage.User, error) {
+	collection := m.database.Collection(UserCollection)
+
 	insertCtx, cancelInsert := context.WithTimeout(ctx, 10*time.Second)
 	defer cancelInsert()
-
-	collection := m.database.Collection(UserCollection)
 
 	insertRes, insertErr := collection.InsertOne(insertCtx, userDetails)
 	if insertErr != nil {
 		if mongo.IsDuplicateKeyError(insertErr) {
+			logger.Log.Debugf("Error creating user: %v", insertErr)
 			insertErr = common.NewError(
 				errors.New("another user with same nickname or email already exists"),
 				common.ErrTypeAlreadyExists,
 			)
 		} else {
+			logger.Log.Errorf("Error creating user: %v", insertErr)
 			insertErr = common.NewError(insertErr, common.ErrTypeInternal)
 		}
-		logger.Log.Errorf("Error creating user: %s", insertErr.Error())
 
 		return nil, insertErr
 	}
@@ -40,7 +41,7 @@ func (m *MongoDB) CreateUser(ctx context.Context, userDetails storage.UserDetail
 	var user storage.User
 	findErr := collection.FindOne(findCtx, filter).Decode(&user)
 	if findErr != nil {
-		logger.Log.Errorf("Error decoding created user: %s", findErr.Error())
+		logger.Log.Errorf("Error decoding created user: %v", findErr)
 
 		return nil, common.NewError(findErr, common.ErrTypeInternal)
 	}

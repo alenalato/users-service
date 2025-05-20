@@ -6,5 +6,10 @@ import (
 )
 
 func (s *UsersServer) DeleteUser(ctx context.Context, req *grpc.DeleteUserRequest) (*grpc.DeleteUserResponse, error) {
-	return nil, nil
+	deleteErr := s.userManager.DeleteUser(ctx, req.GetUserId())
+	if deleteErr != nil {
+		return nil, commonErrorToGRPCError(deleteErr)
+	}
+
+	return &grpc.DeleteUserResponse{}, nil
 }

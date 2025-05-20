@@ -16,13 +16,6 @@ type UserDetails struct {
 	Country   string
 }
 
-type UserUpdate struct {
-	FirstName  string
-	LastName   string
-	Country    string
-	UpdateMask []string
-}
-
 type User struct {
 	ID        string
 	FirstName string
@@ -32,4 +25,17 @@ type User struct {
 	Country   string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type UserUpdate struct {
+	FirstName  string
+	LastName   string
+	Country    string
+	UpdateMask []string
+}
+
+type UserFilter struct {
+	FirstName *string
+	LastName  *string
+	Country   *string
 }

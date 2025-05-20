@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/alenalato/users-service/internal/businesslogic"
+	"github.com/alenalato/users-service/internal/common"
 	"github.com/alenalato/users-service/internal/storage"
 	"github.com/go-playground/validator/v10"
 )
@@ -12,6 +13,7 @@ type Logic struct {
 	converter       modelConverter
 	passwordManager businesslogic.PasswordManager
 	userStorage     storage.UserStorage
+	time            common.TimeProvider
 }
 
 var _ businesslogic.UserManager = new(Logic)
@@ -22,5 +24,6 @@ func NewLogic(passwordManager businesslogic.PasswordManager, userStorage storage
 		converter:       newStorageModelConverter(),
 		passwordManager: passwordManager,
 		userStorage:     userStorage,
+		time:            common.NewTime(),
 	}
 }

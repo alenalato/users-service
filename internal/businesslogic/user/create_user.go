@@ -7,7 +7,6 @@ import (
 	"github.com/alenalato/users-service/internal/common"
 	"github.com/alenalato/users-service/internal/logger"
 	"github.com/google/uuid"
-	"time"
 )
 
 func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDetails) (*businesslogic.User, error) {
@@ -30,7 +29,7 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 
 	// generate ID and timestamps
 	storageUserDetails.ID = uuid.New().String()
-	now := time.Now()
+	now := l.time.Now()
 	storageUserDetails.CreatedAt = now
 	storageUserDetails.UpdatedAt = now
 

@@ -5,6 +5,24 @@ import (
 	"github.com/alenalato/users-service/pkg/grpc"
 )
 
-func (s *UsersServer) ListUsers(context context.Context, req *grpc.ListUsersRequest) (*grpc.ListUsersResponse, error) {
-	return nil, nil
+func (s *UsersServer) ListUsers(ctx context.Context, req *grpc.ListUsersRequest) (*grpc.ListUsersResponse, error) {
+	users, nextPageToken, listErr := s.userManager.ListUsers(
+		ctx,
+		s.converter.fromGrpcListUsersRequestToModel(ctx, req),
+		int(req.GetPageSize()),
+		req.GetPageToken(),
+	)
+	if listErr != nil {
+		return nil, commonErrorToGRPCError(listErr)
+	}
+
+	var grpcUsers []*grpc.User
+	for _, user := range users {
+		grpcUsers = append(grpcUsers, s.converter.fromModelUserToGrpc(ctx, user))
+	}
+
+	return &grpc.ListUsersResponse{
+		Users:         grpcUsers,
+		NextPageToken: nextPageToken,
+	}, nil
 }

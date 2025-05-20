@@ -2,13 +2,17 @@ package user
 
 import (
 	"context"
+	"errors"
 	"github.com/alenalato/users-service/internal/businesslogic"
+	"github.com/alenalato/users-service/internal/common"
+	"github.com/alenalato/users-service/internal/logger"
 	"github.com/alenalato/users-service/internal/storage"
 )
 
 type modelConverter interface {
 	fromModelUserDetailsToStorage(ctx context.Context, userDetails businesslogic.UserDetails) storage.UserDetails
-	fromModelUserUpdateToStorage(ctx context.Context, userUpdate businesslogic.UserUpdate) storage.UserUpdate
+	fromModelUserUpdateToStorage(ctx context.Context, userUpdate businesslogic.UserUpdate) (storage.UserUpdate, error)
+	fromModelUserFilterToStorage(ctx context.Context, userFilter businesslogic.UserFilter) storage.UserFilter
 	fromStorageUserToModel(ctx context.Context, user storage.User) businesslogic.User
 }
 
@@ -34,22 +38,51 @@ func (c *storageModelConverter) fromModelUserDetailsToStorage(
 func (c *storageModelConverter) fromModelUserUpdateToStorage(
 	_ context.Context,
 	userUpdate businesslogic.UserUpdate,
-) storage.UserUpdate {
+) (storage.UserUpdate, error) {
 	storageUserUpdate := storage.UserUpdate{}
+	validUpdates := false
 	for _, field := range userUpdate.UpdateMask {
 		switch field {
 		case "first_name":
 			storageUserUpdate.FirstName = &userUpdate.FirstName
+			validUpdates = true
 		case "last_name":
 			storageUserUpdate.LastName = &userUpdate.LastName
+			validUpdates = true
 		case "country":
 			storageUserUpdate.Country = &userUpdate.Country
+			validUpdates = true
 		default:
 			continue
 		}
 	}
+	if !validUpdates {
+		err := errors.New("no valid fields in update mask")
+		logger.Log.Errorf("error converting user update: %s", err.Error())
 
-	return storageUserUpdate
+		return storage.UserUpdate{}, common.NewError(err, common.ErrTypeInvalidArgument)
+	}
+
+	return storageUserUpdate, nil
+}
+
+func (c *storageModelConverter) fromModelUserFilterToStorage(
+	_ context.Context,
+	userFilter businesslogic.UserFilter,
+) storage.UserFilter {
+	storageUserFilter := storage.UserFilter{}
+
+	if userFilter.FirstName != nil {
+		storageUserFilter.FirstName = userFilter.FirstName
+	}
+	if userFilter.LastName != nil {
+		storageUserFilter.LastName = userFilter.LastName
+	}
+	if userFilter.Country != nil {
+		storageUserFilter.Country = userFilter.Country
+	}
+
+	return storageUserFilter
 }
 
 func (c *storageModelConverter) fromStorageUserToModel(_ context.Context, user storage.User) businesslogic.User {

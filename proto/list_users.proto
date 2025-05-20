@@ -9,9 +9,9 @@ option go_package = "github.com/alenalato/users-service/pkg/grpc";
 import "common.proto";
 
 message ListUsersRequest {
-  uint32 page_size = 10;
-  string page_token = 20;
-  UserFilter filter = 30;
+  UserFilter filter = 10;
+  uint32 page_size = 20;
+  string page_token = 30;
 }
 
 message ListUsersResponse {

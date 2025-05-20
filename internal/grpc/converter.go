@@ -10,6 +10,7 @@ import (
 type modelConverter interface {
 	fromGrpcCreateUserRequestToModel(ctx context.Context, req *protogrpc.CreateUserRequest) businesslogic.UserDetails
 	fromGrpcUpdateUserRequestToModel(ctx context.Context, req *protogrpc.UpdateUserRequest) businesslogic.UserUpdate
+	fromGrpcListUsersRequestToModel(ctx context.Context, req *protogrpc.ListUsersRequest) businesslogic.UserFilter
 	fromModelUserToGrpc(ctx context.Context, user businesslogic.User) *protogrpc.User
 }
 
@@ -39,6 +40,25 @@ func (c *serverModelConverter) fromGrpcUpdateUserRequestToModel(_ context.Contex
 	}
 
 	return userUpdate
+}
+
+func (c *serverModelConverter) fromGrpcListUsersRequestToModel(_ context.Context, req *protogrpc.ListUsersRequest) businesslogic.UserFilter {
+	userFilter := businesslogic.UserFilter{}
+
+	if req.GetFilter().GetFirstName() != nil {
+		firstName := req.GetFilter().GetFirstName().GetValue()
+		userFilter.FirstName = &firstName
+	}
+	if req.GetFilter().GetLastName() != nil {
+		lastName := req.GetFilter().GetLastName().GetValue()
+		userFilter.LastName = &lastName
+	}
+	if req.GetFilter().GetCountry() != nil {
+		country := req.GetFilter().GetCountry().GetValue()
+		userFilter.Country = &country
+	}
+
+	return userFilter
 }
 
 func (c *serverModelConverter) fromModelUserToGrpc(_ context.Context, user businesslogic.User) *protogrpc.User {

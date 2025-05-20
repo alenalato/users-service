@@ -11,5 +11,4 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {
-  string user_id = 10;
 }
