@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/alenalato/users-service/internal/businesslogic/password"
 	"github.com/alenalato/users-service/internal/businesslogic/user"
+	"github.com/alenalato/users-service/internal/events/kafka"
 	"github.com/alenalato/users-service/internal/storage/mongodb"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -13,6 +14,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	servicegrpc "github.com/alenalato/users-service/internal/grpc"
@@ -28,20 +30,6 @@ func main() {
 
 	ctx := context.Background()
 
-	mongoDbStorage, mongodbErr := mongodb.NewMongoDB(
-		nil,
-		os.Getenv("MONGODB_DATABASE"),
-	)
-	if mongodbErr != nil {
-		logger.Log.Fatalf("could not initialize MongoDB storage: %v", mongodbErr)
-	}
-	defer func(mongoDbStorage *mongodb.MongoDB, ctx context.Context) {
-		err := mongoDbStorage.Close(ctx)
-		if err != nil {
-			logger.Log.Errorf("could not close MongoDB storage: %v", err)
-		}
-	}(mongoDbStorage, ctx)
-
 	grpcListenAddress := fmt.Sprintf(
 		"%s:%s",
 		os.Getenv("GRPC_LISTEN_HOST"),
@@ -52,10 +40,45 @@ func main() {
 	if err != nil {
 		logger.Log.Fatalf("could not listen: %v", err)
 	}
+	logger.Log.Infof("TCP listener initialized on %s", grpcListenAddress)
+
+	mongoDbStorage, mongodbErr := mongodb.NewMongoDB(
+		nil,
+		os.Getenv("MONGODB_DATABASE"),
+	)
+	if mongodbErr != nil {
+		logger.Log.Fatalf("could not initialize MongoDB storage: %v", mongodbErr)
+	} else {
+		logger.Log.Infof("MongoDB storage initialized")
+	}
+	defer func(mongoDbStorage *mongodb.MongoDB, ctx context.Context) {
+		err := mongoDbStorage.Close(ctx)
+		if err != nil {
+			logger.Log.Errorf("could not close MongoDB storage: %v", err)
+		}
+	}(mongoDbStorage, ctx)
 
 	passwordManager := password.NewBcrypt()
 
-	userManager := user.NewLogic(passwordManager, mongoDbStorage)
+	kafkaEventEmitter, kafkaErr := kafka.NewEventEmitter(
+		os.Getenv("KAFKA_EVENT_EMITTER_TOPIC_NAME"),
+		kafka.Config{
+			Addresses: strings.Split(os.Getenv("KAFKA_ADDRESSES"), ","),
+		},
+	)
+	if kafkaErr != nil {
+		logger.Log.Fatalf("could not initialize kafka emitter: %v", kafkaErr)
+	} else {
+		logger.Log.Infof("Kafka event emitter initialized")
+	}
+	defer func(kafkaEventEmitter *kafka.EventEmitter) {
+		err := kafkaEventEmitter.Close()
+		if err != nil {
+			logger.Log.Errorf("could not close kafka emitter: %v", err)
+		}
+	}(kafkaEventEmitter)
+
+	userManager := user.NewLogic(passwordManager, mongoDbStorage, kafkaEventEmitter)
 
 	usersServer := servicegrpc.NewUsersServer(userManager)
 
@@ -86,8 +109,6 @@ func main() {
 		<-sigint
 		close(closeServer)
 	}()
-
-	logger.Log.Infof("gRPC server initialized, listening on %s", grpcListenAddress)
 
 	<-closeServer
 

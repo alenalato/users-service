@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/alenalato/users-service/internal/businesslogic"
 	"github.com/alenalato/users-service/internal/common"
+	"github.com/alenalato/users-service/internal/events"
 	"github.com/alenalato/users-service/internal/logger"
 )
 
@@ -44,6 +45,16 @@ func (l *Logic) UpdateUser(
 
 	// convert storage user to model user
 	user := l.converter.fromStorageUserToModel(ctx, *storageUser)
+
+	// emit user event
+	userEvent := l.converter.fromModelUserToEvent(ctx, user)
+	userEvent.EventType = events.EventTypeUpdated
+	userEvent.EventMask = userUpdate.UpdateMask
+	userEvent.EventTime = now
+	emitErr := l.eventEmitter.EmitUserEvent(ctx, userEvent)
+	if emitErr != nil {
+		logger.Log.Warn("User updated without event emission: %v", userEvent)
+	}
 
 	return &user, nil
 }

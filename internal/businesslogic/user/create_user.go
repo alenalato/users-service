@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/alenalato/users-service/internal/businesslogic"
 	"github.com/alenalato/users-service/internal/common"
+	"github.com/alenalato/users-service/internal/events"
 	"github.com/alenalato/users-service/internal/logger"
 	"github.com/google/uuid"
 )
@@ -47,6 +48,15 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 
 	// convert storage user to model user
 	user := l.converter.fromStorageUserToModel(ctx, *storageUser)
+
+	// emit user event
+	userEvent := l.converter.fromModelUserToEvent(ctx, user)
+	userEvent.EventType = events.EventTypeCreated
+	userEvent.EventTime = now
+	emitErr := l.eventEmitter.EmitUserEvent(ctx, userEvent)
+	if emitErr != nil {
+		logger.Log.Warn("User created without event emission: %v", userEvent)
+	}
 
 	return &user, nil
 }

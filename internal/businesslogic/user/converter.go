@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/alenalato/users-service/internal/businesslogic"
 	"github.com/alenalato/users-service/internal/common"
+	"github.com/alenalato/users-service/internal/events"
 	"github.com/alenalato/users-service/internal/logger"
 	"github.com/alenalato/users-service/internal/storage"
 )
@@ -14,6 +15,7 @@ type modelConverter interface {
 	fromModelUserUpdateToStorage(ctx context.Context, userUpdate businesslogic.UserUpdate) (storage.UserUpdate, error)
 	fromModelUserFilterToStorage(ctx context.Context, userFilter businesslogic.UserFilter) storage.UserFilter
 	fromStorageUserToModel(ctx context.Context, user storage.User) businesslogic.User
+	fromModelUserToEvent(ctx context.Context, user businesslogic.User) events.UserEvent
 }
 
 type storageModelConverter struct {
@@ -88,6 +90,22 @@ func (c *storageModelConverter) fromModelUserFilterToStorage(
 func (c *storageModelConverter) fromStorageUserToModel(_ context.Context, user storage.User) businesslogic.User {
 	return businesslogic.User{
 		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Nickname:  user.Nickname,
+		Email:     user.Email,
+		Country:   user.Country,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+}
+
+func (c *storageModelConverter) fromModelUserToEvent(
+	_ context.Context,
+	user businesslogic.User,
+) events.UserEvent {
+	return events.UserEvent{
+		UserId:    user.ID,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Nickname:  user.Nickname,

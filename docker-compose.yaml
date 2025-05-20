@@ -23,6 +23,8 @@ services:
       - GRPC_LISTEN_PORT
       - MONGODB_URI
       - MONGODB_DATABASE
+      - KAFKA_ADDRESSES
+      - KAFKA_EVENT_EMITTER_TOPIC_NAME
 
   mongo:
     image: mongo:4.4
@@ -30,6 +32,55 @@ services:
       - .dev/data/mongo:/data/db
     ports:
       - "27017:27017"
+
+  zookeeper:
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - .dev/data/zookeeper/data:/var/lib/zookeeper/data
+      - .dev/data/zookeeper/log:/var/lib/zookeeper/log
+
+  kafka:
+    image: bitnami/kafka:2.8.1
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - .dev/data/kafka/data:/var/lib/kafka/data
+      - .dev/data/zookeeper/log:/var/lib/zookeeper/log
+    depends_on:
+      - zookeeper
+
+  kafka-init:
+    image: bitnami/kafka:2.8.1
+    command: [ "/bin/bash", "-c", "/create-kafka-topic.sh" ]
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - TOPIC_NAME=${KAFKA_EVENT_EMITTER_TOPIC_NAME}
+    depends_on:
+      kafka:
+        condition: service_started
+    volumes:
+      - type: bind
+        source: .dev/init/create-kafka-topic.sh
+        target: /create-kafka-topic.sh
+    init: true
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:master
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+    depends_on:
+      - kafka
+    ports:
+      - "9093:8080"
 
 volumes:
   git:
