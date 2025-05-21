@@ -17,17 +17,17 @@ func (m *MongoDB) DeleteUser(ctx context.Context, userId string) error {
 
 	filter := bson.D{{Key: "_id", Value: userId}}
 
-	deleteRes, deleteErr := collection.DeleteOne(deleteCtx, filter)
-	if deleteErr != nil {
-		logger.Log.Errorf("Error deleting user: %v", deleteErr)
+	deleteRes, errDelete := collection.DeleteOne(deleteCtx, filter)
+	if errDelete != nil {
+		logger.Log.Errorf("Error deleting user: %v", errDelete)
 
-		return common.NewError(deleteErr, common.ErrTypeInternal)
+		return common.NewError(errDelete, common.ErrTypeInternal)
 	}
 	if deleteRes.DeletedCount == 0 {
-		deleteErr = errors.New("user not found")
-		logger.Log.Errorf("Error deleting user: %v", deleteErr)
+		errDelete = errors.New("user not found")
+		logger.Log.Errorf("Error deleting user: %v", errDelete)
 
-		return common.NewError(deleteErr, common.ErrTypeNotFound)
+		return common.NewError(errDelete, common.ErrTypeNotFound)
 	}
 
 	return nil

@@ -109,7 +109,7 @@ func TestLogic_CreateUser_StorageError(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserDetailsToStorage(gomock.Any(), userDetailsWithPasswordHash).Return(storageUserDetails)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUserDetailsWitTimestamps := storageUserDetails
@@ -163,7 +163,7 @@ func TestLogic_CreateUser_StorageNilUserError(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserDetailsToStorage(gomock.Any(), userDetailsWithPasswordHash).Return(storageUserDetails)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUserDetailsWitTimestamps := storageUserDetails
@@ -217,7 +217,7 @@ func TestLogic_CreateUser_EventEmitterError(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserDetailsToStorage(gomock.Any(), userDetailsWithPasswordHash).Return(storageUserDetails)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUser := &storage.User{
@@ -315,7 +315,7 @@ func TestLogic_CreateUser_Success(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserDetailsToStorage(gomock.Any(), userDetailsWithPasswordHash).Return(storageUserDetails)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUser := &storage.User{

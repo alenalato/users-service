@@ -17,7 +17,7 @@ func (l *Logic) DeleteUser(ctx context.Context, userId string) error {
 	userEvent := events.UserEvent{
 		UserId:    userId,
 		EventType: events.EventTypeDeleted,
-		EventTime: l.time.Now(),
+		EventTime: l.time.Now().UTC(),
 	}
 	errEmit := l.eventEmitter.EmitUserEvent(ctx, userEvent)
 	if errEmit != nil {

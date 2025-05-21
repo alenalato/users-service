@@ -31,7 +31,7 @@ func parsePageToken(
 		err = fmt.Errorf("cannot decode page token: %s", pageToken)
 		logger.Log.Error(err)
 
-		return storage.UserFilter{}, 0, common.NewError(err, common.ErrTypeInternal)
+		return storage.UserFilter{}, 0, common.NewError(err, common.ErrTypeInvalidArgument)
 	}
 
 	// split the token
@@ -52,7 +52,7 @@ func parsePageToken(
 		err = fmt.Errorf("cannot parse skip size from page token: %s", err.Error())
 		logger.Log.Error(err)
 
-		return storage.UserFilter{}, 0, common.NewError(err, common.ErrTypeInternal)
+		return storage.UserFilter{}, 0, common.NewError(err, common.ErrTypeInvalidArgument)
 	}
 
 	return filter, skipSize, nil
@@ -74,7 +74,7 @@ func deserializeFilter(data string) (storage.UserFilter, error) {
 	if err != nil {
 		logger.Log.Errorf("failed to deserialize filter: %v", err)
 
-		return storage.UserFilter{}, common.NewError(err, common.ErrTypeInternal)
+		return storage.UserFilter{}, common.NewError(err, common.ErrTypeInvalidArgument)
 	}
 	return filter, nil
 }

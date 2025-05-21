@@ -62,7 +62,7 @@ func TestLogic_UpdateUser_StorageError(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserUpdateToStorage(gomock.Any(), userUpdate).Return(storageUserUpdate, nil)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUserUpdate.UpdatedAt = &now
@@ -94,7 +94,7 @@ func TestLogic_UpdateUser_StorageNilError(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserUpdateToStorage(gomock.Any(), userUpdate).Return(storageUserUpdate, nil)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUserUpdate.UpdatedAt = &now
@@ -126,7 +126,7 @@ func TestLogic_UpdateUser_EventEmitterError(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserUpdateToStorage(gomock.Any(), userUpdate).Return(storageUserUpdate, nil)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUserUpdate.UpdatedAt = &now
@@ -193,7 +193,7 @@ func TestLogic_UpdateUser_Success(t *testing.T) {
 
 	ts.mockModelConverter.EXPECT().fromModelUserUpdateToStorage(gomock.Any(), userUpdate).Return(storageUserUpdate, nil)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	storageUserUpdate.UpdatedAt = &now

@@ -30,7 +30,7 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 
 	// generate ID and timestamps
 	storageUserDetails.ID = uuid.New().String()
-	now := l.time.Now()
+	now := l.time.Now().UTC()
 	storageUserDetails.CreatedAt = now
 	storageUserDetails.UpdatedAt = now
 

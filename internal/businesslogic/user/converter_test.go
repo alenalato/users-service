@@ -127,8 +127,8 @@ func TestFromStorageUserToModel(t *testing.T) {
 		Nickname:  "johnd",
 		Email:     "john.doe@example.com",
 		Country:   "US",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	expected := businesslogic.User{
@@ -157,8 +157,8 @@ func TestFromModelUserToEvent(t *testing.T) {
 		Nickname:  "johnd",
 		Email:     "john.doe@example.com",
 		Country:   "US",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 	}
 
 	expected := events.UserEvent{

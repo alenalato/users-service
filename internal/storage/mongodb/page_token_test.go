@@ -82,7 +82,7 @@ func TestDeserializeFilter(t *testing.T) {
 			name:          "Failure on unmarshalling",
 			input:         `invalid_json`,
 			expectError:   true,
-			expectedError: common.ErrTypeInternal,
+			expectedError: common.ErrTypeInvalidArgument,
 		},
 	}
 
@@ -189,25 +189,25 @@ func TestParsePageToken(t *testing.T) {
 			name:          "Failure on invalid base64",
 			input:         "invalid_base64",
 			expectError:   true,
-			expectedError: common.ErrTypeInternal,
+			expectedError: common.ErrTypeInvalidArgument,
 		},
 		{
 			name:          "Failure on invalid token format",
 			input:         common.Base64Encode("invalid_token_format"),
 			expectError:   true,
-			expectedError: common.ErrTypeInternal,
+			expectedError: common.ErrTypeInvalidArgument,
 		},
 		{
 			name:          "Failure on invalid filter serialization",
 			input:         common.Base64Encode(`invalid_filter#10`),
 			expectError:   true,
-			expectedError: common.ErrTypeInternal,
+			expectedError: common.ErrTypeInvalidArgument,
 		},
 		{
 			name:          "Failure on invalid skip size",
 			input:         common.Base64Encode(`{"first_name":"John","last_name":"Doe","country":"USA"}#invalid_skip_size`),
 			expectError:   true,
-			expectedError: common.ErrTypeInternal,
+			expectedError: common.ErrTypeInvalidArgument,
 		},
 	}
 

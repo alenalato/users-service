@@ -34,7 +34,7 @@ func TestLogic_DeleteUser_EventEmitterError(t *testing.T) {
 
 	ts.mockUserStorage.EXPECT().DeleteUser(gomock.Any(), userId).Return(nil)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	userEvent := events.UserEvent{
@@ -58,7 +58,7 @@ func TestLogic_DeleteUser_Success(t *testing.T) {
 
 	ts.mockUserStorage.EXPECT().DeleteUser(gomock.Any(), userId).Return(nil)
 
-	now := time.Now()
+	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
 
 	userEvent := events.UserEvent{

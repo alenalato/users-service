@@ -29,7 +29,7 @@ func (l *Logic) UpdateUser(
 	}
 
 	// set updated at timestamp
-	now := l.time.Now()
+	now := l.time.Now().UTC()
 	storageUserUpdate.UpdatedAt = &now
 
 	storageUser, errUpdate := l.userStorage.UpdateUser(ctx, userId, storageUserUpdate)

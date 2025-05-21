@@ -13,7 +13,7 @@ type Config struct {
 
 type EventEmitter struct {
 	topicName string
-	writer    *kafka.Writer
+	writer    Writer
 }
 
 func (e *EventEmitter) Close() error {
