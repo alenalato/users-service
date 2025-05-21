@@ -12,11 +12,11 @@ import (
 
 func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDetails) (*businesslogic.User, error) {
 	// validate input
-	validateErr := validate.Struct(userDetails)
-	if validateErr != nil {
-		logger.Log.Errorf("validation error: %v", validateErr)
+	errValidate := validate.Struct(userDetails)
+	if errValidate != nil {
+		logger.Log.Errorf("validation error: %v", errValidate)
 
-		return nil, common.NewError(validateErr, common.ErrTypeInvalidArgument)
+		return nil, common.NewError(errValidate, common.ErrTypeInvalidArgument)
 	}
 
 	// hash password
@@ -35,9 +35,9 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 	storageUserDetails.UpdatedAt = now
 
 	// create user in storage
-	storageUser, createErr := l.userStorage.CreateUser(ctx, storageUserDetails)
-	if createErr != nil {
-		return nil, createErr
+	storageUser, errCreate := l.userStorage.CreateUser(ctx, storageUserDetails)
+	if errCreate != nil {
+		return nil, errCreate
 	}
 	if storageUser == nil {
 		err := errors.New("unexpected nil storage user")
@@ -53,8 +53,8 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 	userEvent := l.converter.fromModelUserToEvent(ctx, user)
 	userEvent.EventType = events.EventTypeCreated
 	userEvent.EventTime = now
-	emitErr := l.eventEmitter.EmitUserEvent(ctx, userEvent)
-	if emitErr != nil {
+	errEmit := l.eventEmitter.EmitUserEvent(ctx, userEvent)
+	if errEmit != nil {
 		logger.Log.Warn("User created without event emission: %v", userEvent)
 	}
 

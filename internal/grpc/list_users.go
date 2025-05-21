@@ -6,14 +6,14 @@ import (
 )
 
 func (s *UsersServer) ListUsers(ctx context.Context, req *grpc.ListUsersRequest) (*grpc.ListUsersResponse, error) {
-	users, nextPageToken, listErr := s.userManager.ListUsers(
+	users, nextPageToken, errList := s.userManager.ListUsers(
 		ctx,
 		s.converter.fromGrpcListUsersRequestToModel(ctx, req),
 		int(req.GetPageSize()),
 		req.GetPageToken(),
 	)
-	if listErr != nil {
-		return nil, commonErrorToGRPCError(listErr)
+	if errList != nil {
+		return nil, commonErrorToGRPCError(errList)
 	}
 
 	var grpcUsers []*grpc.User

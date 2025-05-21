@@ -2,6 +2,8 @@ package common
 
 import "time"
 
+//go:generate mockgen -source=./time.go -destination=./time_mock.go -package=common TimeProvider
+
 type TimeProvider interface {
 	Now() time.Time
 }

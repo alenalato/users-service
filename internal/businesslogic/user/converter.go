@@ -18,12 +18,12 @@ type modelConverter interface {
 	fromModelUserToEvent(ctx context.Context, user businesslogic.User) events.UserEvent
 }
 
-type storageModelConverter struct {
+type businessLogicModelConverter struct {
 }
 
-var _ modelConverter = new(storageModelConverter)
+var _ modelConverter = new(businessLogicModelConverter)
 
-func (c *storageModelConverter) fromModelUserDetailsToStorage(
+func (c *businessLogicModelConverter) fromModelUserDetailsToStorage(
 	_ context.Context,
 	userDetails businesslogic.UserDetails,
 ) storage.UserDetails {
@@ -37,7 +37,7 @@ func (c *storageModelConverter) fromModelUserDetailsToStorage(
 	}
 }
 
-func (c *storageModelConverter) fromModelUserUpdateToStorage(
+func (c *businessLogicModelConverter) fromModelUserUpdateToStorage(
 	_ context.Context,
 	userUpdate businesslogic.UserUpdate,
 ) (storage.UserUpdate, error) {
@@ -68,7 +68,7 @@ func (c *storageModelConverter) fromModelUserUpdateToStorage(
 	return storageUserUpdate, nil
 }
 
-func (c *storageModelConverter) fromModelUserFilterToStorage(
+func (c *businessLogicModelConverter) fromModelUserFilterToStorage(
 	_ context.Context,
 	userFilter businesslogic.UserFilter,
 ) storage.UserFilter {
@@ -87,7 +87,7 @@ func (c *storageModelConverter) fromModelUserFilterToStorage(
 	return storageUserFilter
 }
 
-func (c *storageModelConverter) fromStorageUserToModel(_ context.Context, user storage.User) businesslogic.User {
+func (c *businessLogicModelConverter) fromStorageUserToModel(_ context.Context, user storage.User) businesslogic.User {
 	return businesslogic.User{
 		ID:        user.ID,
 		FirstName: user.FirstName,
@@ -100,7 +100,7 @@ func (c *storageModelConverter) fromStorageUserToModel(_ context.Context, user s
 	}
 }
 
-func (c *storageModelConverter) fromModelUserToEvent(
+func (c *businessLogicModelConverter) fromModelUserToEvent(
 	_ context.Context,
 	user businesslogic.User,
 ) events.UserEvent {
@@ -116,7 +116,7 @@ func (c *storageModelConverter) fromModelUserToEvent(
 	}
 }
 
-// newStorageModelConverter creates a new storageModelConverter
-func newStorageModelConverter() *storageModelConverter {
-	return &storageModelConverter{}
+// newBusinessLogicModelConverter creates a new businessLogicModelConverter
+func newBusinessLogicModelConverter() *businessLogicModelConverter {
+	return &businessLogicModelConverter{}
 }

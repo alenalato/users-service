@@ -8,9 +8,9 @@ import (
 
 func (l *Logic) DeleteUser(ctx context.Context, userId string) error {
 	// delete user in storage
-	deleteErr := l.userStorage.DeleteUser(ctx, userId)
-	if deleteErr != nil {
-		return deleteErr
+	errDelete := l.userStorage.DeleteUser(ctx, userId)
+	if errDelete != nil {
+		return errDelete
 	}
 
 	// emit user event
@@ -19,8 +19,8 @@ func (l *Logic) DeleteUser(ctx context.Context, userId string) error {
 		EventType: events.EventTypeDeleted,
 		EventTime: l.time.Now(),
 	}
-	emitErr := l.eventEmitter.EmitUserEvent(ctx, userEvent)
-	if emitErr != nil {
+	errEmit := l.eventEmitter.EmitUserEvent(ctx, userEvent)
+	if errEmit != nil {
 		logger.Log.Warn("User deleted without event emission: %v", userEvent)
 	}
 

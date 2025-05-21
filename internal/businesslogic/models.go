@@ -31,7 +31,7 @@ type UserUpdate struct {
 	FirstName  string
 	LastName   string
 	Country    string
-	UpdateMask []string
+	UpdateMask []string `validate:"required"`
 }
 
 type UserFilter struct {

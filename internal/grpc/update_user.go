@@ -6,13 +6,13 @@ import (
 )
 
 func (s *UsersServer) UpdateUser(ctx context.Context, req *grpc.UpdateUserRequest) (*grpc.UpdateUserResponse, error) {
-	user, updateErr := s.userManager.UpdateUser(
+	user, errUpdate := s.userManager.UpdateUser(
 		ctx,
 		req.GetUserId(),
 		s.converter.fromGrpcUpdateUserRequestToModel(ctx, req),
 	)
-	if updateErr != nil {
-		return nil, commonErrorToGRPCError(updateErr)
+	if errUpdate != nil {
+		return nil, commonErrorToGRPCError(errUpdate)
 	}
 
 	return &grpc.UpdateUserResponse{

@@ -7,6 +7,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+//go:generate mockgen -destination=converter_mock.go -package=grpc github.com/alenalato/users-service/internal/grpc modelConverter
+
 type modelConverter interface {
 	fromGrpcCreateUserRequestToModel(ctx context.Context, req *protogrpc.CreateUserRequest) businesslogic.UserDetails
 	fromGrpcUpdateUserRequestToModel(ctx context.Context, req *protogrpc.UpdateUserRequest) businesslogic.UserUpdate

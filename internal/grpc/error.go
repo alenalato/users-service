@@ -8,10 +8,10 @@ import (
 )
 
 func commonErrorToGRPCError(err error) error {
-	var commonErr common.Error
+	var errCommon common.Error
 	switch {
-	case errors.As(err, &commonErr):
-		switch err.(common.Error).GetType() {
+	case errors.As(err, &errCommon):
+		switch err.(common.Error).Type() {
 		case common.ErrTypeNotFound:
 			return status.New(codes.NotFound, err.Error()).Err()
 		case common.ErrTypeAlreadyExists:

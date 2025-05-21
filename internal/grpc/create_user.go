@@ -6,9 +6,9 @@ import (
 )
 
 func (s *UsersServer) CreateUser(ctx context.Context, req *grpc.CreateUserRequest) (*grpc.CreateUserResponse, error) {
-	user, createErr := s.userManager.CreateUser(ctx, s.converter.fromGrpcCreateUserRequestToModel(ctx, req))
-	if createErr != nil {
-		return nil, commonErrorToGRPCError(createErr)
+	user, errCreate := s.userManager.CreateUser(ctx, s.converter.fromGrpcCreateUserRequestToModel(ctx, req))
+	if errCreate != nil {
+		return nil, commonErrorToGRPCError(errCreate)
 	}
 
 	return &grpc.CreateUserResponse{

@@ -28,7 +28,7 @@ func NewLogic(
 ) *Logic {
 	return &Logic{
 		time:            common.NewTime(),
-		converter:       newStorageModelConverter(),
+		converter:       newBusinessLogicModelConverter(),
 		passwordManager: passwordManager,
 		userStorage:     userStorage,
 		eventEmitter:    eventEmitter,

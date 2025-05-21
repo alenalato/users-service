@@ -17,24 +17,24 @@ func (l *Logic) ListUsers(
 	pageToken string,
 ) ([]businesslogic.User, string, error) {
 	// validate input
-	validateErr := errors.Join(
+	errValidate := errors.Join(
 		validate.Var(pageSize, "gte=0"),
 		validate.Var(pageSize, fmt.Sprintf("lte=%d", storage.MaxPageSize)),
 	)
-	if validateErr != nil {
-		logger.Log.Errorf("validation error: %v", validateErr)
+	if errValidate != nil {
+		logger.Log.Errorf("validation error: %v", errValidate)
 
-		return nil, "", common.NewError(validateErr, common.ErrTypeInvalidArgument)
+		return nil, "", common.NewError(errValidate, common.ErrTypeInvalidArgument)
 	}
 
-	storageUsers, nextPageToken, listErr := l.userStorage.ListUsers(
+	storageUsers, nextPageToken, errList := l.userStorage.ListUsers(
 		ctx,
 		l.converter.fromModelUserFilterToStorage(ctx, userFilter),
 		pageSize,
 		pageToken,
 	)
-	if listErr != nil {
-		return nil, "", listErr
+	if errList != nil {
+		return nil, "", errList
 	}
 
 	var users []businesslogic.User

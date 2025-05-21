@@ -15,26 +15,26 @@ func (l *Logic) UpdateUser(
 	userUpdate businesslogic.UserUpdate,
 ) (*businesslogic.User, error) {
 	// validate input
-	validateErr := validate.Struct(userUpdate)
-	if validateErr != nil {
-		logger.Log.Errorf("validation error: %v", validateErr)
+	errValidate := validate.Struct(userUpdate)
+	if errValidate != nil {
+		logger.Log.Errorf("validation error: %v", errValidate)
 
-		return nil, common.NewError(validateErr, common.ErrTypeInvalidArgument)
+		return nil, common.NewError(errValidate, common.ErrTypeInvalidArgument)
 	}
 
 	// prepare storage user update
-	storageUserUpdate, convErr := l.converter.fromModelUserUpdateToStorage(ctx, userUpdate)
-	if convErr != nil {
-		return nil, convErr
+	storageUserUpdate, errConv := l.converter.fromModelUserUpdateToStorage(ctx, userUpdate)
+	if errConv != nil {
+		return nil, errConv
 	}
 
 	// set updated at timestamp
 	now := l.time.Now()
 	storageUserUpdate.UpdatedAt = &now
 
-	storageUser, updateErr := l.userStorage.UpdateUser(ctx, userId, storageUserUpdate)
-	if updateErr != nil {
-		return nil, updateErr
+	storageUser, errUpdate := l.userStorage.UpdateUser(ctx, userId, storageUserUpdate)
+	if errUpdate != nil {
+		return nil, errUpdate
 	}
 	if storageUser == nil {
 		err := errors.New("unexpected nil storage user")
@@ -51,8 +51,8 @@ func (l *Logic) UpdateUser(
 	userEvent.EventType = events.EventTypeUpdated
 	userEvent.EventMask = userUpdate.UpdateMask
 	userEvent.EventTime = now
-	emitErr := l.eventEmitter.EmitUserEvent(ctx, userEvent)
-	if emitErr != nil {
+	errEmit := l.eventEmitter.EmitUserEvent(ctx, userEvent)
+	if errEmit != nil {
 		logger.Log.Warn("User updated without event emission: %v", userEvent)
 	}
 

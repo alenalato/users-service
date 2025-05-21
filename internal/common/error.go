@@ -35,6 +35,10 @@ type Error struct {
 }
 
 func (e Error) Error() string {
+	if e.err == nil {
+		return e.errType.String()
+	}
+
 	return e.err.Error()
 }
 
@@ -42,7 +46,7 @@ func (e Error) Unwrap() error {
 	return e.err
 }
 
-func (e Error) GetType() ErrorType {
+func (e Error) Type() ErrorType {
 	return e.errType
 }
 
