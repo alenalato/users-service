@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-func TestMongoDB_DeleteUser_NotFound(t *testing.T) {
+func TestMongoDB_DeleteUser_NotFoundError(t *testing.T) {
 	userId := "notpresent"
 	err := testMongoStorage.DeleteUser(context.Background(), userId)
 
@@ -25,7 +25,7 @@ func TestMongoDB_DeleteUser_Success(t *testing.T) {
 	userId := "present"
 
 	// create a user to ensure it exists
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 
 	_, errIns := collection.InsertOne(
 		context.Background(),

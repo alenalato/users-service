@@ -7,6 +7,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// commonErrorToGRPCError converts a common.Error to a gRPC Status
 func commonErrorToGRPCError(err error) error {
 	var errCommon common.Error
 	switch {

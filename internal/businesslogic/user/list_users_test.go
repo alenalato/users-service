@@ -26,6 +26,15 @@ func TestLogic_ListUsers_ValidationError(t *testing.T) {
 	var errCommon common.Error
 	assert.ErrorAs(t, err, &errCommon)
 	assert.Equal(t, common.ErrTypeInvalidArgument, errCommon.Type())
+
+	pageSize = storage.MaxPageSize + 1
+
+	users, nextPageToken, err = ts.userManager.ListUsers(context.Background(), userFilter, pageSize, pageToken)
+
+	assert.Nil(t, users)
+	assert.Empty(t, nextPageToken)
+	assert.ErrorAs(t, err, &errCommon)
+	assert.Equal(t, common.ErrTypeInvalidArgument, errCommon.Type())
 }
 
 func TestLogic_ListUsers_StorageError(t *testing.T) {

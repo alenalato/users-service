@@ -23,6 +23,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// This message is used to filter users, values are combined with AND
 type UserFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -86,6 +87,7 @@ func (x *UserFilter) GetCountry() *UserFilter_CountryFilter {
 	return nil
 }
 
+// This message represents a user
 type User struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -189,6 +191,7 @@ func (x *User) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+// Filter by first name if provided
 type UserFilter_FirstNameFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -236,6 +239,7 @@ func (x *UserFilter_FirstNameFilter) GetValue() string {
 	return ""
 }
 
+// Filter by last name if provided
 type UserFilter_LastNameFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -283,6 +287,7 @@ func (x *UserFilter_LastNameFilter) GetValue() string {
 	return ""
 }
 
+// Filter by country if provided
 type UserFilter_CountryFilter struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -9,8 +9,11 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+// EmitUserEvent emits a user event to the Kafka topic
+// It marshals the user event to JSON and sends it as a message
+// to the Kafka topic using the Kafka writer
 func (e *EventEmitter) EmitUserEvent(ctx context.Context, userEvent events.UserEvent) error {
-	// marshal user event to JSON
+	// Marshal user event to JSON
 	userEventBytes, err := json.Marshal(userEvent)
 	if err != nil {
 		logger.Log.Errorf("Failed to marshal user event: %v", err)

@@ -29,7 +29,7 @@ func TestMongoDB_UpdateUser_Success(t *testing.T) {
 	}
 
 	// create a user to ensure it exists
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 	_, errIns := collection.InsertOne(
 		context.Background(),
 		userDetails,
@@ -73,9 +73,75 @@ func TestMongoDB_UpdateUser_Success(t *testing.T) {
 	assert.Equal(t, userDetails.Country, foundUser.Country)
 	assert.Equal(t, userDetails.CreatedAt.UnixMilli(), foundUser.CreatedAt.UnixMilli())
 	assert.Equal(t, userUpdate.UpdatedAt.UnixMilli(), foundUser.UpdatedAt.UnixMilli())
+
+	// clean up the test user
+	_, errDelete := collection.DeleteOne(
+		context.Background(),
+		bson.D{{Key: "_id", Value: userId}},
+	)
+	require.NoError(t, errDelete)
 }
 
-func TestMongoDB_UpdateUser_NotFound(t *testing.T) {
+func TestMongoDB_UpdateUser_AlreadyExistsError(t *testing.T) {
+	userId := "existinguser"
+
+	now := time.Now().UTC()
+
+	userDetails := storage.UserDetails{
+		ID:           userId,
+		FirstName:    "OldFirstName",
+		LastName:     "OldLastName",
+		Nickname:     "nickname",
+		Email:        "email",
+		PasswordHash: "passwordhash",
+		Country:      "country",
+		CreatedAt:    now,
+		UpdatedAt:    now,
+	}
+
+	// create first user
+	_, err := testMongoStorage.CreateUser(context.Background(), userDetails)
+	require.NoError(t, err)
+
+	userDetails2 := storage.UserDetails{
+		ID:        "anotheruser",
+		FirstName: "AnotherFirstName",
+		LastName:  "AnotherLastName",
+		Nickname:  "nickname2",
+		Email:     "email2",
+		Country:   "country2",
+	}
+
+	// create second user
+	_, err = testMongoStorage.CreateUser(context.Background(), userDetails2)
+	require.NoError(t, err)
+
+	// attempt to update the first user with the second user's nickname
+	userUpdate := storage.UserUpdate{}
+	userUpdate.Nickname = &userDetails2.Nickname
+	userUpdate.UpdatedAt = &now
+
+	user, err := testMongoStorage.UpdateUser(context.Background(), userId, userUpdate)
+	assert.Error(t, err)
+	assert.Nil(t, user)
+	var errCommon common.Error
+	assert.ErrorAs(t, err, &errCommon)
+	assert.Equal(t, common.ErrTypeAlreadyExists, errCommon.Type())
+
+	// clean up the test users
+	collection := testMongoStorage.Database().Collection(UserCollection)
+	_, errDelete := collection.DeleteMany(
+		context.Background(),
+		bson.D{
+			{"_id", bson.D{
+				{"$in", []string{userId, userDetails2.ID}},
+			}},
+		},
+	)
+	require.NoError(t, errDelete)
+}
+
+func TestMongoDB_UpdateUser_NotFoundError(t *testing.T) {
 	userId := "nonexistentuser"
 
 	userUpdate := storage.UserUpdate{}

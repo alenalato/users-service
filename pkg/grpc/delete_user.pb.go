@@ -27,6 +27,7 @@ type DeleteUserRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// user ID of the user to be deleted
 	UserId string `protobuf:"bytes,10,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 }
 

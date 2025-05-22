@@ -9,6 +9,7 @@ import (
 
 //go:generate mockgen -destination=converter_mock.go -package=grpc github.com/alenalato/users-service/internal/grpc modelConverter
 
+// modelConverter is an interface for converting between gRPC and business logic models
 type modelConverter interface {
 	fromGrpcCreateUserRequestToModel(ctx context.Context, req *protogrpc.CreateUserRequest) businesslogic.UserDetails
 	fromGrpcUpdateUserRequestToModel(ctx context.Context, req *protogrpc.UpdateUserRequest) businesslogic.UserUpdate
@@ -20,6 +21,7 @@ type serverModelConverter struct{}
 
 var _ modelConverter = new(serverModelConverter)
 
+// fromGrpcCreateUserRequestToModel converts a gRPC CreateUserRequest to a businesslogic.UserDetails
 func (c *serverModelConverter) fromGrpcCreateUserRequestToModel(_ context.Context, req *protogrpc.CreateUserRequest) businesslogic.UserDetails {
 	return businesslogic.UserDetails{
 		FirstName: req.GetFirstName(),
@@ -33,10 +35,13 @@ func (c *serverModelConverter) fromGrpcCreateUserRequestToModel(_ context.Contex
 	}
 }
 
+// fromGrpcUpdateUserRequestToModel converts a gRPC UpdateUserRequest to a businesslogic.UserUpdate
 func (c *serverModelConverter) fromGrpcUpdateUserRequestToModel(_ context.Context, req *protogrpc.UpdateUserRequest) businesslogic.UserUpdate {
 	userUpdate := businesslogic.UserUpdate{
 		FirstName:  req.GetUpdate().GetFirstName(),
 		LastName:   req.GetUpdate().GetLastName(),
+		Nickname:   req.GetUpdate().GetNickname(),
+		Email:      req.GetUpdate().GetEmail(),
 		Country:    req.GetUpdate().GetCountry(),
 		UpdateMask: req.GetUpdateMask().GetPaths(),
 	}
@@ -44,6 +49,7 @@ func (c *serverModelConverter) fromGrpcUpdateUserRequestToModel(_ context.Contex
 	return userUpdate
 }
 
+// fromGrpcListUsersRequestToModel converts a gRPC ListUsersRequest to a businesslogic.UserFilter
 func (c *serverModelConverter) fromGrpcListUsersRequestToModel(_ context.Context, req *protogrpc.ListUsersRequest) businesslogic.UserFilter {
 	userFilter := businesslogic.UserFilter{}
 
@@ -63,6 +69,7 @@ func (c *serverModelConverter) fromGrpcListUsersRequestToModel(_ context.Context
 	return userFilter
 }
 
+// fromModelUserToGrpc converts a businesslogic.User to a gRPC User
 func (c *serverModelConverter) fromModelUserToGrpc(_ context.Context, user businesslogic.User) *protogrpc.User {
 	return &protogrpc.User{
 		Id:        user.ID,
@@ -76,6 +83,7 @@ func (c *serverModelConverter) fromModelUserToGrpc(_ context.Context, user busin
 	}
 }
 
+// newServerModelConverter creates a new serverModelConverter
 func newServerModelConverter() *serverModelConverter {
 	return &serverModelConverter{}
 }

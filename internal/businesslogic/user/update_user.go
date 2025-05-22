@@ -14,7 +14,7 @@ func (l *Logic) UpdateUser(
 	userId string,
 	userUpdate businesslogic.UserUpdate,
 ) (*businesslogic.User, error) {
-	// validate input
+	// Validate input
 	errValidate := validate.Struct(userUpdate)
 	if errValidate != nil {
 		logger.Log.Errorf("validation error: %v", errValidate)
@@ -22,16 +22,17 @@ func (l *Logic) UpdateUser(
 		return nil, common.NewError(errValidate, common.ErrTypeInvalidArgument)
 	}
 
-	// prepare storage user update
+	// Prepare storage user update
 	storageUserUpdate, errConv := l.converter.fromModelUserUpdateToStorage(ctx, userUpdate)
 	if errConv != nil {
 		return nil, errConv
 	}
 
-	// set updated at timestamp
+	// Set updated at timestamp
 	now := l.time.Now().UTC()
 	storageUserUpdate.UpdatedAt = &now
 
+	// Update user in storage
 	storageUser, errUpdate := l.userStorage.UpdateUser(ctx, userId, storageUserUpdate)
 	if errUpdate != nil {
 		return nil, errUpdate
@@ -43,10 +44,10 @@ func (l *Logic) UpdateUser(
 		return nil, common.NewError(err, common.ErrTypeInternal)
 	}
 
-	// convert storage user to model user
+	// Convert storage user to model user
 	user := l.converter.fromStorageUserToModel(ctx, *storageUser)
 
-	// emit user event
+	// Emit user event
 	userEvent := l.converter.fromModelUserToEvent(ctx, user)
 	userEvent.EventType = events.EventTypeUpdated
 	userEvent.EventMask = userUpdate.UpdateMask

@@ -23,6 +23,7 @@ func (m *MongoDB) DeleteUser(ctx context.Context, userId string) error {
 
 		return common.NewError(errDelete, common.ErrTypeInternal)
 	}
+	// Check if the user was found and deleted, if not, return a not found error
 	if deleteRes.DeletedCount == 0 {
 		errDelete = errors.New("user not found")
 		logger.Log.Errorf("Error deleting user: %v", errDelete)

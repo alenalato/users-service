@@ -65,17 +65,21 @@ func TestServerModelConverter_FromGrpcUpdateUserRequestToModel(t *testing.T) {
 				Update: &protogrpc.UpdateUserRequest_Update{
 					FirstName: "Jane",
 					LastName:  "Smith",
+					Nickname:  "jsmith",
+					Email:     "jane@smith.com",
 					Country:   "UK",
 				},
 				UpdateMask: &fieldmaskpb.FieldMask{
-					Paths: []string{"first_name", "last_name", "country"},
+					Paths: []string{"first_name", "last_name", "nickname", "email", "country"},
 				},
 			},
 			want: businesslogic.UserUpdate{
 				FirstName:  "Jane",
 				LastName:   "Smith",
 				Country:    "UK",
-				UpdateMask: []string{"first_name", "last_name", "country"},
+				Nickname:   "jsmith",
+				Email:      "jane@smith.com",
+				UpdateMask: []string{"first_name", "last_name", "nickname", "email", "country"},
 			},
 		},
 	}

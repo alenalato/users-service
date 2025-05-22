@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# This script generates the grpc server code from the proto files.
+
 mkdir -p ./pkg/grpc
 docker run \
 	-v "$(pwd)":/defs \

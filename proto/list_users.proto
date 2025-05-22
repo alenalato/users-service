@@ -9,12 +9,18 @@ option go_package = "github.com/alenalato/users-service/pkg/grpc";
 import "common.proto";
 
 message ListUsersRequest {
+  // filter is used to specify the criteria for filtering users
   UserFilter filter = 10;
+  // page_size is used to specify the number of users to return
   uint32 page_size = 20;
+  // page_token is used to specify the token for cursor-based pagination
   string page_token = 30;
 }
 
 message ListUsersResponse {
+  // users is a list of users that match the filter criteria
+  // sorting is done by created_at field in ascending order
   repeated User users = 10;
+  // next_page_token is used to specify the token for the next page of users
   string next_page_token = 20;
 }

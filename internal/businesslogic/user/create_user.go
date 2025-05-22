@@ -11,7 +11,7 @@ import (
 )
 
 func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDetails) (*businesslogic.User, error) {
-	// validate input
+	// Validate input
 	errValidate := validate.Struct(userDetails)
 	if errValidate != nil {
 		logger.Log.Errorf("validation error: %v", errValidate)
@@ -19,22 +19,22 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 		return nil, common.NewError(errValidate, common.ErrTypeInvalidArgument)
 	}
 
-	// hash password
+	// Hash password using password manager
 	passwordErr := l.passwordManager.GeneratePasswordHash(ctx, &userDetails.Password)
 	if passwordErr != nil {
 		return nil, passwordErr
 	}
 
-	// prepare storage user details
+	// Prepare storage user details
 	storageUserDetails := l.converter.fromModelUserDetailsToStorage(ctx, userDetails)
 
-	// generate ID and timestamps
+	// Generate ID and timestamps
 	storageUserDetails.ID = uuid.New().String()
 	now := l.time.Now().UTC()
 	storageUserDetails.CreatedAt = now
 	storageUserDetails.UpdatedAt = now
 
-	// create user in storage
+	// Create user in storage
 	storageUser, errCreate := l.userStorage.CreateUser(ctx, storageUserDetails)
 	if errCreate != nil {
 		return nil, errCreate
@@ -46,10 +46,10 @@ func (l *Logic) CreateUser(ctx context.Context, userDetails businesslogic.UserDe
 		return nil, common.NewError(err, common.ErrTypeInternal)
 	}
 
-	// convert storage user to model user
+	// Convert storage user to model user
 	user := l.converter.fromStorageUserToModel(ctx, *storageUser)
 
-	// emit user event
+	// Emit user event
 	userEvent := l.converter.fromModelUserToEvent(ctx, user)
 	userEvent.EventType = events.EventTypeCreated
 	userEvent.EventTime = now

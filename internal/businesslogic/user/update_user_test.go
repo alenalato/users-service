@@ -195,6 +195,7 @@ func TestLogic_UpdateUser_Success(t *testing.T) {
 
 	now := time.Now().UTC()
 	ts.mockTimeProvider.EXPECT().Now().Return(now)
+	before := now.Add(-time.Hour)
 
 	storageUserUpdate.UpdatedAt = &now
 
@@ -205,7 +206,7 @@ func TestLogic_UpdateUser_Success(t *testing.T) {
 		Nickname:  "nickname",
 		Email:     "email",
 		Country:   "uk",
-		CreatedAt: now,
+		CreatedAt: before,
 		UpdatedAt: now,
 	}
 

@@ -10,6 +10,8 @@ import (
 	"github.com/alenalato/users-service/internal/storage"
 )
 
+// modelConverter is an interface that defines methods for converting between
+// user business logic models and other models (e.g., storage models, event models).
 type modelConverter interface {
 	fromModelUserDetailsToStorage(ctx context.Context, userDetails businesslogic.UserDetails) storage.UserDetails
 	fromModelUserUpdateToStorage(ctx context.Context, userUpdate businesslogic.UserUpdate) (storage.UserUpdate, error)
@@ -23,6 +25,7 @@ type businessLogicModelConverter struct {
 
 var _ modelConverter = new(businessLogicModelConverter)
 
+// fromModelUserDetailsToStorage converts a businesslogic.UserDetails to a storage.UserDetails
 func (c *businessLogicModelConverter) fromModelUserDetailsToStorage(
 	_ context.Context,
 	userDetails businesslogic.UserDetails,
@@ -37,6 +40,7 @@ func (c *businessLogicModelConverter) fromModelUserDetailsToStorage(
 	}
 }
 
+// fromModelUserUpdateToStorage converts a businesslogic.UserUpdate to a storage.UserUpdate
 func (c *businessLogicModelConverter) fromModelUserUpdateToStorage(
 	_ context.Context,
 	userUpdate businesslogic.UserUpdate,
@@ -50,6 +54,12 @@ func (c *businessLogicModelConverter) fromModelUserUpdateToStorage(
 			validUpdates = true
 		case "last_name":
 			storageUserUpdate.LastName = &userUpdate.LastName
+			validUpdates = true
+		case "nickname":
+			storageUserUpdate.Nickname = &userUpdate.Nickname
+			validUpdates = true
+		case "email":
+			storageUserUpdate.Email = &userUpdate.Email
 			validUpdates = true
 		case "country":
 			storageUserUpdate.Country = &userUpdate.Country
@@ -68,6 +78,7 @@ func (c *businessLogicModelConverter) fromModelUserUpdateToStorage(
 	return storageUserUpdate, nil
 }
 
+// fromModelUserFilterToStorage converts a businesslogic.UserFilter to a storage.UserFilter
 func (c *businessLogicModelConverter) fromModelUserFilterToStorage(
 	_ context.Context,
 	userFilter businesslogic.UserFilter,
@@ -87,6 +98,7 @@ func (c *businessLogicModelConverter) fromModelUserFilterToStorage(
 	return storageUserFilter
 }
 
+// fromStorageUserToModel converts a storage.User to a businesslogic.User
 func (c *businessLogicModelConverter) fromStorageUserToModel(_ context.Context, user storage.User) businesslogic.User {
 	return businesslogic.User{
 		ID:        user.ID,
@@ -100,6 +112,7 @@ func (c *businessLogicModelConverter) fromStorageUserToModel(_ context.Context, 
 	}
 }
 
+// fromModelUserToEvent converts a businesslogic.User to an events.UserEvent
 func (c *businessLogicModelConverter) fromModelUserToEvent(
 	_ context.Context,
 	user businesslogic.User,
@@ -116,7 +129,7 @@ func (c *businessLogicModelConverter) fromModelUserToEvent(
 	}
 }
 
-// newBusinessLogicModelConverter creates a new businessLogicModelConverter
+// newBusinessLogicModelConverter creates a new businessLogicModelConverter instance
 func newBusinessLogicModelConverter() *businessLogicModelConverter {
 	return &businessLogicModelConverter{}
 }

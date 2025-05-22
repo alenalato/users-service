@@ -44,13 +44,17 @@ func TestFromModelUserUpdateToStorage(t *testing.T) {
 	model := businesslogic.UserUpdate{
 		FirstName:  "John",
 		LastName:   "Doe",
+		Nickname:   "johnd",
+		Email:      "john@doe.com",
 		Country:    "US",
-		UpdateMask: []string{"first_name", "last_name", "country"},
+		UpdateMask: []string{"first_name", "last_name", "nickname", "email", "country"},
 	}
 
 	expected := storage.UserUpdate{
 		FirstName: &model.FirstName,
 		LastName:  &model.LastName,
+		Nickname:  &model.Nickname,
+		Email:     &model.Email,
 		Country:   &model.Country,
 	}
 

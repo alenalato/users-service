@@ -8,23 +8,28 @@ option go_package = "github.com/alenalato/users-service/pkg/grpc";
 
 import "google/protobuf/timestamp.proto";
 
+// This message is used to filter users, values are combined with AND
 message UserFilter {
+  // Filter by first name if provided
   message FirstNameFilter {
     string value = 10;
   }
   FirstNameFilter first_name = 10;
 
+  // Filter by last name if provided
   message LastNameFilter {
     string value = 10;
   }
   LastNameFilter last_name = 20;
 
+  // Filter by country if provided
   message CountryFilter {
     string value = 10;
   }
   CountryFilter country = 30;
 }
 
+// This message represents a user
 message User {
   string id = 10;
   string first_name = 20;

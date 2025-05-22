@@ -7,6 +7,7 @@ package users;
 option go_package = "github.com/alenalato/users-service/pkg/grpc";
 
 message DeleteUserRequest {
+  // user ID of the user to be deleted
   string user_id = 10;
 }
 

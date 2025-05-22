@@ -12,6 +12,10 @@ import (
 
 const tokenDelimiter = "#"
 
+// generateNextPageToken generates the next page token for pagination
+// based on the provided filter and skip size.
+// The token is a base64 encoded string that contains the serialized filter
+// and the skip size, separated by a delimiter.
 func generateNextPageToken(filter storage.UserFilter, skipSize int64) (string, error) {
 	serializedFilter, err := serializeFilter(filter)
 	if err != nil {
@@ -22,10 +26,13 @@ func generateNextPageToken(filter storage.UserFilter, skipSize int64) (string, e
 	return common.Base64Encode(token), nil
 }
 
+// parsePageToken parses the page token and returns the user filter
+// and skip size. The token is expected to be a base64 encoded string
+// that contains the serialized filter and the skip size, separated by a delimiter.
 func parsePageToken(
 	pageToken string,
 ) (userFilter storage.UserFilter, skipSize int64, err error) {
-	// decode base64
+	// Decode base64
 	plainToken := common.Base64Decode(pageToken)
 	if plainToken == "" {
 		err = fmt.Errorf("cannot decode page token: %s", pageToken)
@@ -34,7 +41,7 @@ func parsePageToken(
 		return storage.UserFilter{}, 0, common.NewError(err, common.ErrTypeInvalidArgument)
 	}
 
-	// split the token
+	// Split the token
 	parts := strings.Split(plainToken, tokenDelimiter)
 	if len(parts) != 2 {
 		err = fmt.Errorf("invalid page token format: %s", plainToken)
@@ -46,7 +53,7 @@ func parsePageToken(
 		return storage.UserFilter{}, 0, err
 	}
 
-	// parse the skip size
+	// Parse the skip size
 	skipSize, err = strconv.ParseInt(parts[1], 10, 64)
 	if err != nil {
 		err = fmt.Errorf("cannot parse skip size from page token: %s", err.Error())
@@ -58,6 +65,7 @@ func parsePageToken(
 	return filter, skipSize, nil
 }
 
+// serializeFilter serializes the user filter into a JSON string.
 func serializeFilter(filter storage.UserFilter) (string, error) {
 	data, err := json.Marshal(filter)
 	if err != nil {
@@ -68,6 +76,7 @@ func serializeFilter(filter storage.UserFilter) (string, error) {
 	return string(data), nil
 }
 
+// deserializeFilter deserializes the JSON string into a user filter.
 func deserializeFilter(data string) (storage.UserFilter, error) {
 	var filter storage.UserFilter
 	err := json.Unmarshal([]byte(data), &filter)

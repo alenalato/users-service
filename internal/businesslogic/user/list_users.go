@@ -16,7 +16,7 @@ func (l *Logic) ListUsers(
 	pageSize int,
 	pageToken string,
 ) ([]businesslogic.User, string, error) {
-	// validate input
+	// Validate input
 	errValidate := errors.Join(
 		validate.Var(pageSize, "gte=0"),
 		validate.Var(pageSize, fmt.Sprintf("lte=%d", storage.MaxPageSize)),
@@ -27,6 +27,7 @@ func (l *Logic) ListUsers(
 		return nil, "", common.NewError(errValidate, common.ErrTypeInvalidArgument)
 	}
 
+	// List users in storage
 	storageUsers, nextPageToken, errList := l.userStorage.ListUsers(
 		ctx,
 		l.converter.fromModelUserFilterToStorage(ctx, userFilter),
@@ -37,6 +38,7 @@ func (l *Logic) ListUsers(
 		return nil, "", errList
 	}
 
+	// Convert storage users to model users
 	var users []businesslogic.User
 	for _, storageUser := range storageUsers {
 		users = append(users, l.converter.fromStorageUserToModel(ctx, storageUser))

@@ -16,12 +16,14 @@ func (m *MongoDB) ListUsers(
 ) ([]storage.User, string, error) {
 	collection := m.database.Collection(UserCollection)
 
+	// Coerce the page size to a valid value
 	if pageSize <= 0 || pageSize > storage.MaxPageSize {
 		pageSize = storage.MaxPageSize
 	}
 
 	var skipSize int64
 	if pageToken != "" {
+		// Decode the page token to get cursor skip size and filter
 		var errTok error
 		userFilter, skipSize, errTok = parsePageToken(pageToken)
 		if errTok != nil {
@@ -29,10 +31,13 @@ func (m *MongoDB) ListUsers(
 		}
 	}
 
-	// add 1 to the requested pageSize to test if there will be a next page
+	// Add 1 to the requested pageSize to tell if there is a next page
 	limit := int64(pageSize) + 1
 
-	opts := options.Find().SetSkip(skipSize).SetLimit(limit)
+	opts := options.Find().
+		SetSkip(skipSize).
+		SetLimit(limit).
+		SetSort(map[string]interface{}{"created_at": 1}) // Default fixed sort by created_at in ascending order
 
 	cursor, errFind := collection.Find(ctx, userFilter, opts)
 	if errFind != nil {
@@ -49,17 +54,20 @@ func (m *MongoDB) ListUsers(
 	}
 
 	nextPageToken := ""
-	// there is the extra element in the list, generate the next page token
+	// There is the extra element at the end of the result, generate the next page token
 	if len(users) > pageSize {
 		var errTokGen error
-		nextPageToken, errTokGen = generateNextPageToken(userFilter, skipSize+int64(pageSize))
+		nextPageToken, errTokGen = generateNextPageToken(
+			userFilter,
+			skipSize+int64(pageSize), // Move the skip size to the next page
+		)
 		if errTokGen != nil {
 			logger.Log.Errorf("Error generating next page token: %v", errTokGen)
 
 			return nil, "", common.NewError(errTokGen, common.ErrTypeInternal)
 		}
 
-		// remove the last element from the list
+		// Remove the last element from the list
 		users = users[:pageSize]
 	}
 

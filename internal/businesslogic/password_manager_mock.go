@@ -55,15 +55,15 @@ func (mr *MockPasswordManagerMockRecorder) GeneratePasswordHash(ctx, passwordDet
 }
 
 // VerifyPassword mocks base method.
-func (m *MockPasswordManager) VerifyPassword(ctx context.Context, password string, passwordDetails *PasswordDetails) error {
+func (m *MockPasswordManager) VerifyPassword(ctx context.Context, passwordDetails *PasswordDetails) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "VerifyPassword", ctx, password, passwordDetails)
+	ret := m.ctrl.Call(m, "VerifyPassword", ctx, passwordDetails)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // VerifyPassword indicates an expected call of VerifyPassword.
-func (mr *MockPasswordManagerMockRecorder) VerifyPassword(ctx, password, passwordDetails any) *gomock.Call {
+func (mr *MockPasswordManagerMockRecorder) VerifyPassword(ctx, passwordDetails any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyPassword", reflect.TypeOf((*MockPasswordManager)(nil).VerifyPassword), ctx, password, passwordDetails)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyPassword", reflect.TypeOf((*MockPasswordManager)(nil).VerifyPassword), ctx, passwordDetails)
 }

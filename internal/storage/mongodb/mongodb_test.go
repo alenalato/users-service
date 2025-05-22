@@ -73,7 +73,7 @@ func TestMain(m *testing.M) {
 			log.Fatalf("Could not purge resource: %s", err)
 		}
 		// disconnect mongodb client
-		if err = dbClient.Disconnect(context.TODO()); err != nil {
+		if err = testMongoStorage.Close(context.TODO()); err != nil {
 			panic(err)
 		}
 	}()
@@ -86,7 +86,7 @@ func TestMongoDB_UniqueIndexes(t *testing.T) {
 	insertCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	collection := testMongoStorage.GetDataBase().Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 
 	users := []interface{}{
 		storage.UserDetails{
@@ -109,30 +109,27 @@ func TestMongoDB_UniqueIndexes(t *testing.T) {
 	require.NoError(t, err)
 
 	// Test unique index on ID
-	_, err = testMongoStorage.database.Collection(UserCollection).
-		InsertOne(insertCtx, storage.UserDetails{
-			ID: "ff6e31dd-fa91-4c23-8cf8-c5c7f9b364c9",
-		})
+	_, err = collection.InsertOne(insertCtx, storage.UserDetails{
+		ID: "ff6e31dd-fa91-4c23-8cf8-c5c7f9b364c9",
+	})
 
 	assert.Error(t, err)
 	assert.True(t, mongo.IsDuplicateKeyError(err))
 
 	// Test unique index on Email
-	_, err = testMongoStorage.database.Collection(UserCollection).
-		InsertOne(insertCtx, storage.UserDetails{
-			ID:    uuid.New().String(),
-			Email: "john@doe.com",
-		})
+	_, err = collection.InsertOne(insertCtx, storage.UserDetails{
+		ID:    uuid.New().String(),
+		Email: "john@doe.com",
+	})
 
 	assert.Error(t, err)
 	assert.True(t, mongo.IsDuplicateKeyError(err))
 
 	// Test unique index on Nickname
-	_, err = testMongoStorage.database.Collection(UserCollection).
-		InsertOne(insertCtx, storage.UserDetails{
-			ID:       uuid.New().String(),
-			Nickname: "johndoe",
-		})
+	_, err = collection.InsertOne(insertCtx, storage.UserDetails{
+		ID:       uuid.New().String(),
+		Nickname: "johndoe",
+	})
 
 	assert.Error(t, err)
 	assert.True(t, mongo.IsDuplicateKeyError(err))

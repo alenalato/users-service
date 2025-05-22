@@ -9,14 +9,18 @@ option go_package = "github.com/alenalato/users-service/pkg/grpc";
 import "common.proto";
 
 message CreateUserRequest {
-  string first_name = 20;
-  string last_name = 30;
-  string nickname = 40;
-  string password = 50;
-  string email = 60;
-  string country = 70;
+  string first_name = 10;
+  string last_name = 20;
+  // nickname is a unique identifier for the user and is a required field
+  string nickname = 30;
+  // password is a required field
+  string password = 40;
+  // email is a unique identifier for the user and is a required field
+  string email = 50;
+  string country = 60;
 }
 
 message CreateUserResponse {
+  // the created user
   User user = 10;
 }

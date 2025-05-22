@@ -16,7 +16,7 @@ func testTimeForStorage(t time.Time) time.Time {
 }
 
 func TestMongoDB_ListUsers_Success(t *testing.T) {
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 	users := []interface{}{
 		storage.User{
 			ID:        "user1",
@@ -25,8 +25,8 @@ func TestMongoDB_ListUsers_Success(t *testing.T) {
 			Email:     "alice@example.com",
 			Nickname:  "alice",
 			Country:   "USA",
-			CreatedAt: testTimeForStorage(time.Now().Add(-2 * time.Hour)),
-			UpdatedAt: testTimeForStorage(time.Now().Add(-1 * time.Hour)),
+			CreatedAt: testTimeForStorage(time.Now().Add(-4 * time.Hour)),
+			UpdatedAt: testTimeForStorage(time.Now().Add(-3 * time.Hour)),
 		},
 		storage.User{
 			ID:        "user2",
@@ -45,8 +45,8 @@ func TestMongoDB_ListUsers_Success(t *testing.T) {
 			Email:     "charlie@example.com",
 			Nickname:  "charlie",
 			Country:   "UK",
-			CreatedAt: testTimeForStorage(time.Now().Add(-4 * time.Hour)),
-			UpdatedAt: testTimeForStorage(time.Now().Add(-3 * time.Hour)),
+			CreatedAt: testTimeForStorage(time.Now().Add(-2 * time.Hour)),
+			UpdatedAt: testTimeForStorage(time.Now().Add(-1 * time.Hour)),
 		},
 	}
 	_, err := collection.InsertMany(context.Background(), users)
@@ -82,7 +82,7 @@ func TestMongoDB_ListUsers_Success(t *testing.T) {
 }
 
 func TestMongoDB_ListUsers_SuccessWithFilter(t *testing.T) {
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 	users := []interface{}{
 		storage.User{
 			ID:        "user1",
@@ -91,8 +91,8 @@ func TestMongoDB_ListUsers_SuccessWithFilter(t *testing.T) {
 			Email:     "alice@example.com",
 			Nickname:  "alice",
 			Country:   "USA",
-			CreatedAt: testTimeForStorage(time.Now().Add(-2 * time.Hour)),
-			UpdatedAt: testTimeForStorage(time.Now().Add(-1 * time.Hour)),
+			CreatedAt: testTimeForStorage(time.Now().Add(-4 * time.Hour)),
+			UpdatedAt: testTimeForStorage(time.Now().Add(-3 * time.Hour)),
 		},
 		storage.User{
 			ID:        "user2",
@@ -111,8 +111,8 @@ func TestMongoDB_ListUsers_SuccessWithFilter(t *testing.T) {
 			Email:     "charlie@example.com",
 			Nickname:  "charlie",
 			Country:   "UK",
-			CreatedAt: testTimeForStorage(time.Now().Add(-4 * time.Hour)),
-			UpdatedAt: testTimeForStorage(time.Now().Add(-3 * time.Hour)),
+			CreatedAt: testTimeForStorage(time.Now().Add(-2 * time.Hour)),
+			UpdatedAt: testTimeForStorage(time.Now().Add(-1 * time.Hour)),
 		},
 	}
 	_, err := collection.InsertMany(context.Background(), users)
@@ -149,7 +149,7 @@ func TestMongoDB_ListUsers_SuccessWithFilter(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestMongoDB_ListUsers_InvalidPageToken(t *testing.T) {
+func TestMongoDB_ListUsers_InvalidPageTokenError(t *testing.T) {
 	userFilter := storage.UserFilter{}
 	pageSize := 1
 	invalidPageToken := "invalid-token"
@@ -162,7 +162,7 @@ func TestMongoDB_ListUsers_InvalidPageToken(t *testing.T) {
 }
 
 func TestMongoDB_ListUsers_SuccessInvalidPageSize(t *testing.T) {
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 	users := []interface{}{
 		storage.User{
 			ID:        "user1",
@@ -171,8 +171,8 @@ func TestMongoDB_ListUsers_SuccessInvalidPageSize(t *testing.T) {
 			Email:     "alice@example.com",
 			Nickname:  "alice",
 			Country:   "USA",
-			CreatedAt: testTimeForStorage(time.Now().Add(-2 * time.Hour)),
-			UpdatedAt: testTimeForStorage(time.Now().Add(-1 * time.Hour)),
+			CreatedAt: testTimeForStorage(time.Now().Add(-4 * time.Hour)),
+			UpdatedAt: testTimeForStorage(time.Now().Add(-3 * time.Hour)),
 		},
 		storage.User{
 			ID:        "user2",
@@ -191,8 +191,8 @@ func TestMongoDB_ListUsers_SuccessInvalidPageSize(t *testing.T) {
 			Email:     "charlie@example.com",
 			Nickname:  "charlie",
 			Country:   "UK",
-			CreatedAt: testTimeForStorage(time.Now().Add(-4 * time.Hour)),
-			UpdatedAt: testTimeForStorage(time.Now().Add(-3 * time.Hour)),
+			CreatedAt: testTimeForStorage(time.Now().Add(-2 * time.Hour)),
+			UpdatedAt: testTimeForStorage(time.Now().Add(-1 * time.Hour)),
 		},
 	}
 	_, err := collection.InsertMany(context.Background(), users)

@@ -1,18 +1,22 @@
 name: users
 services:
+  # DEV server application
   server:
+    profiles:
+      - app
     build:
       context: ./
     volumes:
       - .:/mnt
+      # share socket for docker test lib
       - /var/run/docker.sock:/var/run/docker.sock
       # unmount .git
       - git:/mnt/.git
-      # unmount .dev
+      # unmount .dev that contains dependencies' storage data
       - dev:/mnt/.dev
-      # DEV share go mod cache for faster go run
+      # share go mod cache for faster go run
       - ~/go/pkg:/go/pkg
-      # DEV share go build cache for faster go run
+      # share go build cache for faster go run
       - ~/.cache/go-build:/root/.cache/go-build
     ports:
       - "9090:9090"
@@ -26,22 +30,22 @@ services:
       - KAFKA_ADDRESSES
       - KAFKA_EVENT_EMITTER_TOPIC_NAME
 
+  # DEV mongodb
+  # version limited to 4.4 due to compatibility of current linux host setup
   mongo:
+    profiles:
+      - dependencies
     image: mongo:4.4
     volumes:
       - .dev/data/mongo:/data/db
     ports:
+      # connect mongo client easily from host
       - "27017:27017"
 
-  zookeeper:
-    image: bitnami/zookeeper:latest
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    volumes:
-      - .dev/data/zookeeper/data:/var/lib/zookeeper/data
-      - .dev/data/zookeeper/log:/var/lib/zookeeper/log
-
+  # DEV kafka
   kafka:
+    profiles:
+      - dependencies
     image: bitnami/kafka:2.8.1
     environment:
       - KAFKA_BROKER_ID=1
@@ -56,7 +60,10 @@ services:
     depends_on:
       - zookeeper
 
+  # DEV create local kafka topic for faster project setup
   kafka-init:
+    profiles:
+      - dependencies
     image: bitnami/kafka:2.8.1
     command: [ "/bin/bash", "-c", "/create-kafka-topic.sh" ]
     environment:
@@ -71,7 +78,21 @@ services:
         target: /create-kafka-topic.sh
     init: true
 
+  # DEV zookeeper is a dependency for kafka
+  zookeeper:
+    profiles:
+      - dependencies
+    image: bitnami/zookeeper:latest
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - .dev/data/zookeeper/data:/var/lib/zookeeper/data
+      - .dev/data/zookeeper/log:/var/lib/zookeeper/log
+
+  # DEV convenience local UI for kafka
   kafka-ui:
+    profiles:
+      - dependencies
     image: provectuslabs/kafka-ui:master
     environment:
       - KAFKA_CLUSTERS_0_NAME=local

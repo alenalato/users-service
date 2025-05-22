@@ -38,7 +38,7 @@ func TestMongoDB_CreateUser_Success(t *testing.T) {
 	assert.Equal(t, userDetails.UpdatedAt.UnixMilli(), createdUser.UpdatedAt.UnixMilli())
 
 	// verify the user exists in the database
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 	var foundUser storage.User
 	errFind := collection.FindOne(
 		context.Background(),
@@ -62,7 +62,7 @@ func TestMongoDB_CreateUser_Success(t *testing.T) {
 	require.NoError(t, errDelete)
 }
 
-func TestMongoDB_CreateUser_AlreadyExists(t *testing.T) {
+func TestMongoDB_CreateUser_AlreadyExistsError(t *testing.T) {
 	userDetails := storage.UserDetails{
 		ID: "duplicateuser",
 	}
@@ -78,7 +78,7 @@ func TestMongoDB_CreateUser_AlreadyExists(t *testing.T) {
 	assert.Equal(t, common.ErrTypeAlreadyExists, errCommon.Type())
 
 	// clean up the test user
-	collection := testMongoStorage.database.Collection(UserCollection)
+	collection := testMongoStorage.Database().Collection(UserCollection)
 	_, errDelete := collection.DeleteOne(
 		context.Background(),
 		bson.D{{Key: "_id", Value: userDetails.ID}},

@@ -11,24 +11,29 @@ import (
 
 const UserCollection = "user"
 
+// MongoDB is the MongoDB storage implementation of the UserStorage interface
 type MongoDB struct {
-	client   *mongo.Client
+	// client is the internal MongoDB client
+	client *mongo.Client
+	// database is the internal MongoDB database
 	database *mongo.Database
 }
 
 var _ storage.UserStorage = new(MongoDB)
 
-// Close closes the MongoDB connection
+// Close closes the MongoDB connection for proper resource cleanup
 func (m *MongoDB) Close(ctx context.Context) error {
 	return m.client.Disconnect(ctx)
 }
 
-// GetDataBase returns the inner MongoDB database
-func (m *MongoDB) GetDataBase() *mongo.Database {
+// Database returns the inner MongoDB database
+func (m *MongoDB) Database() *mongo.Database {
 	return m.database
 }
 
-// NewMongoDB creates a new MongoDB storage. If client is nil, it creates a new client using the MONGODB_URI environment variable
+// NewMongoDB creates a new MongoDB storage.
+// If client is nil, it creates a new client using the MONGODB_URI environment variable and connects to the database with the given name.
+// It also creates unique indexes for user email and nickname.
 func NewMongoDB(client *mongo.Client, databaseName string) (*MongoDB, error) {
 	if client == nil {
 		logger.Log.Debugf("Creating new MongoDB client with URI: %s", os.Getenv("MONGODB_URI"))
@@ -62,6 +67,20 @@ func NewMongoDB(client *mongo.Client, databaseName string) (*MongoDB, error) {
 				"nickname": 1,
 			},
 			Options: options.Index().SetName("nickname-unique").SetUnique(true),
+		},
+	)
+	if indexErr != nil {
+		return nil, indexErr
+	}
+
+	// Create index for user created_at
+	_, indexErr = database.Collection(UserCollection).Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys: map[string]interface{}{
+				"created_at": 1,
+			},
+			Options: options.Index().SetName("created-at").SetUnique(false),
 		},
 	)
 	if indexErr != nil {

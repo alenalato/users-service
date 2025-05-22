@@ -7,13 +7,13 @@ import (
 )
 
 func (l *Logic) DeleteUser(ctx context.Context, userId string) error {
-	// delete user in storage
+	// Delete user in storage
 	errDelete := l.userStorage.DeleteUser(ctx, userId)
 	if errDelete != nil {
 		return errDelete
 	}
 
-	// emit user event
+	// Emit user event
 	userEvent := events.UserEvent{
 		UserId:    userId,
 		EventType: events.EventTypeDeleted,

@@ -27,9 +27,12 @@ type ListUsersRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Filter    *UserFilter `protobuf:"bytes,10,opt,name=filter,proto3" json:"filter,omitempty"`
-	PageSize  uint32      `protobuf:"varint,20,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	PageToken string      `protobuf:"bytes,30,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// filter is used to specify the criteria for filtering users
+	Filter *UserFilter `protobuf:"bytes,10,opt,name=filter,proto3" json:"filter,omitempty"`
+	// page_size is used to specify the number of users to return
+	PageSize uint32 `protobuf:"varint,20,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// page_token is used to specify the token for cursor-based pagination
+	PageToken string `protobuf:"bytes,30,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 }
 
 func (x *ListUsersRequest) Reset() {
@@ -90,8 +93,11 @@ type ListUsersResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Users         []*User `protobuf:"bytes,10,rep,name=users,proto3" json:"users,omitempty"`
-	NextPageToken string  `protobuf:"bytes,20,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// users is a list of users that match the filter criteria
+	// sorting is done by created_at field in ascending order
+	Users []*User `protobuf:"bytes,10,rep,name=users,proto3" json:"users,omitempty"`
+	// next_page_token is used to specify the token for the next page of users
+	NextPageToken string `protobuf:"bytes,20,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 }
 
 func (x *ListUsersResponse) Reset() {

@@ -8,6 +8,11 @@ const EventTypeCreated UserEventType = "created"
 const EventTypeUpdated UserEventType = "updated"
 const EventTypeDeleted UserEventType = "deleted"
 
+// UserEvent represents a user event
+// It is used to emit events to the event bus
+// EventType is one of the following: created, updated, deleted
+// EventTime is the time when the event was emitted
+// EventMask is a list of fields that were changed in the user for the updated event
 type UserEvent struct {
 	EventType UserEventType `json:"event_type"`
 	EventTime time.Time     `json:"event_time"`

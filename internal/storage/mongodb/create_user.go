@@ -19,6 +19,7 @@ func (m *MongoDB) CreateUser(ctx context.Context, userDetails storage.UserDetail
 
 	insertRes, insertErr := collection.InsertOne(insertCtx, userDetails)
 	if insertErr != nil {
+		// Duplicate key error handling
 		if mongo.IsDuplicateKeyError(insertErr) {
 			logger.Log.Debugf("Error creating user: %v", insertErr)
 			insertErr = common.NewError(
@@ -33,6 +34,7 @@ func (m *MongoDB) CreateUser(ctx context.Context, userDetails storage.UserDetail
 		return nil, insertErr
 	}
 
+	// Find the created user to return
 	findCtx, cancelFind := context.WithTimeout(ctx, 5*time.Second)
 	defer cancelFind()
 

@@ -28,7 +28,7 @@ func (e ErrorType) String() string {
 	}
 }
 
-// Error is an auxiliary error type
+// Error is an auxiliary and augmented error type
 type Error struct {
 	errType ErrorType
 	err     error
