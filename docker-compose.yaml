@@ -3,7 +3,7 @@ services:
   # DEV server application
   server:
     profiles:
-      - app
+      - application
     build:
       context: ./
     volumes:

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package users;
+package users.v1;
 
 option go_package = "github.com/alenalato/users-service/pkg/grpc";
 
