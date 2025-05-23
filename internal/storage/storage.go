@@ -2,7 +2,7 @@ package storage
 
 import "context"
 
-const MaxPageSize = 10
+const MaxPageSize = 100
 
 //go:generate mockgen -destination=storage_mock.go -package=storage github.com/alenalato/users-service/internal/storage UserStorage
 

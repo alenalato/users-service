@@ -38,7 +38,7 @@ func NewMongoDB(client *mongo.Client, databaseName string) (*MongoDB, error) {
 	if client == nil {
 		logger.Log.Debugf("Creating new MongoDB client with URI: %s", os.Getenv("MONGODB_URI"))
 		var newClientErr error
-		client, newClientErr = newMongoDBClient(os.Getenv("MONGODB_URI"))
+		client, newClientErr = NewMongoDBClient(os.Getenv("MONGODB_URI"))
 		if newClientErr != nil {
 			return nil, newClientErr
 		}
@@ -93,7 +93,7 @@ func NewMongoDB(client *mongo.Client, databaseName string) (*MongoDB, error) {
 	}, nil
 }
 
-func newMongoDBClient(uri string) (*mongo.Client, error) {
+func NewMongoDBClient(uri string) (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(uri)
 
 	return mongo.Connect(clientOptions)

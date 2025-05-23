@@ -78,6 +78,8 @@ The application is mainly structured into the following directories:
 - `cmd` contains the executable main packages.
   - `cmd/server` contains the main package that starts the gRPC server.
 - `proto` contains the Protocol Buffers definitions of the Users service.
+  - Ideally, this files should be versioned on a separate repository to allow every project to use it as a dependency
+  at a specific version depending on the project needs.
 - `pkg/grpc` contains the gRPC server definition.
   - This code is **generated** by the [protoc generator](./scripts/generate-server-code.sh) from the Protocol Buffers files.
 - `internal` contains the packages used internally by the application.
@@ -112,10 +114,14 @@ inspired by [hexagonal architecture](https://netflixtechblog.com/ready-for-chang
 Required tools are `docker` with the `docker compose plugin` and, optionally, a bash-compatible shell.
 
 ### Testing
-The application is tested with **unit tests** for the business logic and the gRPC server using [generated mocked dependencies](https://github.com/uber-go/mock).\
+The application code is tested with **unit tests** for the business logic and the gRPC server using [generated mocked dependencies](https://github.com/uber-go/mock).\
 The coverage of unit tests is intentionally not 100% because some parts were not worth testing for the scope of this development.
 
-The MongoDB storage is tested with **integration tests** that use a [disposable container with a real MongoDB instance](https://github.com/ory/dockertest). These tests are slower than unit tests but are more realistic and can catch integration issues with the real MongoDB instance.
+The MongoDB storage is tested with **integration tests** that use a [disposable container with a real MongoDB instance](https://github.com/ory/dockertest). 
+These tests are slower than unit tests but are more realistic and can catch integration issues with the real MongoDB instance.
+
+The gRPC server is also tested in the `cmd/server/main` package with **integration tests** that use a gRPC client and an
+actual instance of the server using a disposable storage and a mocked event emitter. These tests allow to test the full server's behavior.
 
 ## Usage
 

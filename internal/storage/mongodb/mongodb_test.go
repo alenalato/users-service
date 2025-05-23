@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 
 	// exponential backoff-retry
 	err = pool.Retry(func() error {
-		dbClient, err = newMongoDBClient(fmt.Sprintf(
+		dbClient, err = NewMongoDBClient(fmt.Sprintf(
 			"mongodb://%s:%s",
 			resource.Container.NetworkSettings.Gateway,
 			resource.GetPort("27017/tcp"),
